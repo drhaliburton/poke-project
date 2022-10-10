@@ -1,12 +1,12 @@
 import { Move, PokemonType } from "../models";
-var moves = require('./moves.json')
+var moves = require('../../db/moves.json')
 
 const movesService = {
   getMoves: (): Move[] => {
     return moves;
   },
   getMovesForTypes: (types: PokemonType[]): Move[] => {
-    return moves.filter(p => types.includes(moves.type));
+    return moves.filter((p: Move) => types.includes(moves.type));
   },
 }
 

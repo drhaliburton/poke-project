@@ -1,5 +1,5 @@
 import { Item } from "../models";
-var items = require('./items.json')
+var items = require('../../db/items.json')
 
 const itemService = {
   getItems: (): Item[] => {

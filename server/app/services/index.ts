@@ -1,3 +1,3 @@
-export * from './itemService'
-export * from './movesService'
-export * from './pokemonService'
+export { itemService } from './itemService'
+export { movesService } from './movesService'
+export { pokemonService } from './pokemonService'
