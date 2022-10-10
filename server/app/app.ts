@@ -1,6 +1,10 @@
 import { itemService, movesService, pokemonService } from "./services"
+import { PokemonType } from "./models";
 import express, { Response } from 'express'
+import cors from 'cors'
+
 const app = express();
+app.use(cors())
 
 const port = 3000
 
@@ -23,17 +27,24 @@ app.get('/pokemon/find/:id', (req, res) => {
   res.send(pokemon)
 })
 
+app.get('/pokemon/type/:type', (req, res) => {
+  const pokemonType = req.params.type as PokemonType
+  const types = pokemonService.getPokemonByType(pokemonType)
+  res.send(types)
+})
+
 app.get('/pokemon/types', (_req, res) => {
   const types = pokemonService.getTypes()
   res.send(types)
 })
 
-app.get('/moves/types', (req, res) => {
-  const id = req.body.types && req.body.types.length
+
+app.get('/moves/types/:pokemonId', (req, res) => {
+  const id = req.params.pokemonId && parseInt(req.params.pokemonId)
   if (!id) {
-    handleBadRequest(res, 'List of pokemon types required')
+    handleBadRequest(res, 'Pokemon ID is required')
   }
-  const moves = movesService.getMovesForTypes(req.body.types)
+  const moves = movesService.getMovesByPokemonId(id)
   res.send(moves)
 })
 
