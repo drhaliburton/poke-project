@@ -7,20 +7,34 @@ import {
   flexRender
 } from '@tanstack/react-table'
 import { useMemo, useState } from 'react'
-import { Pokemon, PokemonType, Type } from '../types'
+import { Pokemon } from '../types'
 import { Column, ColumnWrapper, Header, Row, TableLayout } from './Table.styles'
+
+const buildImagePath = (id: string) => {
+  let zeroCount = 3;
+  zeroCount = zeroCount - id.length
+  return `https://raw.githubusercontent.com/fanzeyi/pokemon.json/master/thumbnails/${"0".repeat(zeroCount)}${id}.png`
+}
 
 const Table = (
   { pokemon, isLoading }:
-    { pokemon: Pokemon[], types: Type[], isLoading: boolean }
+    { pokemon: Pokemon[], isLoading: boolean }
 ) => {
-  const [sorting, setSorting] = useState<SortingState>([{ id: 'name', desc: true }])
+  const [sorting, setSorting] = useState<SortingState>([{ id: 'id', desc: false }])
 
   const columns = useMemo<ColumnDef<Pokemon>[]>(() => {
     const idCol: ColumnDef<Pokemon> = {
       accessorKey: "id",
       id: "id",
       header: "ID",
+    }
+
+    const imageCol: ColumnDef<Pokemon> = {
+      id: "image",
+      header: "",
+      cell: info => <img
+        src={buildImagePath(info.row.original.id.toString())}
+        alt={info.row.original.name.english} />
     }
 
     const nameCol: ColumnDef<Pokemon> = {
@@ -57,7 +71,7 @@ const Table = (
       id: "Speed",
       header: "Speed",
     }
-    return [idCol, nameCol, typesCol, hpCol, attackCol, defenseCol, speedCol]
+    return [idCol, imageCol, nameCol, typesCol, hpCol, attackCol, defenseCol, speedCol]
   }, [])
   const table = useReactTable(
     {
@@ -76,18 +90,24 @@ const Table = (
       <thead>
         {headers.map(headerGroup => (
           <Row key={headerGroup.id}>
-            {headerGroup.headers.map(header => (
-              <Header key={header.id}>
-                <Column onClick={header.column.getToggleSortingHandler()}>
-                  {flexRender(header.column.columnDef.header, header.getContext())}
-                </Column>
-              </Header>)
-            )}
+            {headerGroup.headers.map(header => {
+              const columnSort = header.column.getIsSorted();
+              return (
+                <Header key={header.id}>
+                  <Column onClick={header.column.getToggleSortingHandler()}>
+                    {flexRender(header.column.columnDef.header, header.getContext())}
+                    {columnSort ? {
+                      asc: '▲',
+                      desc: '▼'
+                    }[columnSort] : undefined}
+                  </Column>
+                </Header>)
+            })}
           </Row>
         ))}
       </thead>
       <tbody>
-        {rows.map((row, index) => (
+        {!isLoading ? rows.map((row, index) => (
           <Row key={row.id} isOdd={!(index % 2)}>
             {row.getVisibleCells().map(cell => (
               <ColumnWrapper key={cell.id}>
@@ -95,7 +115,7 @@ const Table = (
               </ColumnWrapper>
             ))}
           </Row>
-        ))}
+        )) : <Row><ColumnWrapper>Loading...</ColumnWrapper></Row>}
       </tbody>
     </TableLayout>
   )

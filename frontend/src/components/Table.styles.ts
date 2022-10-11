@@ -1,7 +1,7 @@
 import styled from 'styled-components'
 
 const TableLayout = styled.table`
-  width: 95%;
+  width: 100%;
   margin: 24px auto;
   text-align: left;
   border-spacing: 0;
