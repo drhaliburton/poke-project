@@ -73,6 +73,7 @@ const Table = (
     }
     return [idCol, imageCol, nameCol, typesCol, hpCol, attackCol, defenseCol, speedCol]
   }, [])
+
   const table = useReactTable(
     {
       data: pokemon,
